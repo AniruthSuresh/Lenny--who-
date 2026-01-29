@@ -39,6 +39,7 @@ def get_video_ids(playlist_url):
 def has_transcript(video_id):
     """
     Checks whether an English transcript exists for a video.
+    Issue : Some vidoes may not have transcripts or have them disabled / in my case : it was private 
     """
     try:
         ytt_api = YouTubeTranscriptApi()
