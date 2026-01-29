@@ -16,8 +16,8 @@ IMPORTANT:
 Uses the updated transcript API flow: https://github.com/langchain-ai/langchain-community/issues/290#issuecomment-3301428239 (still a PR )
 """
 
-INPUT_FILE = "../data/raw/youtube/video_ids.txt"
-OUTPUT_DIR = "../data/raw/youtube/transcripts"
+INPUT_FILE = "../../data/raw/youtube/video_ids.txt"
+OUTPUT_DIR = "../../data/raw/youtube/transcripts"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
