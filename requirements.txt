@@ -1,0 +1,19 @@
+# Scraping & Data Ingestion
+apify-client
+youtube-transcript-api
+scrapetube
+beautifulsoup4
+
+# RAG & LLM Orchestration
+dspy-ai
+textgrad
+langchain
+langchain-community
+openai
+python-dotenv
+
+# Processing & DB
+pandas
+numpy
+pinecone-client  # or 'supabase' if you prefer
+sentence-transformers
