@@ -9,6 +9,10 @@ with open("../data/chunks/final_chunks.json") as f:
 
 corpus_texts = [c['content'] for c in all_chunks]
 
+"""
+model.encode() takes a list of strings and outputs a tensor of embeddings
+Shape : (num_texts, embedding_dimension) = torch.Size([5163, 1024]) in this case
+"""
 corpus_embs = model.encode(corpus_texts, convert_to_tensor=True, show_progress_bar=True)
 
 # we save the embeddings along with the chunks(content + metadata) for easy retrieval later
