@@ -72,7 +72,6 @@ def process_data():
                     }
                     all_chunks.append(chunk_data)
 
-    # Final Save
     output_path = os.path.join(PROCESSED_DIR, "final_chunks.json")
     with open(output_path, "w") as f:
         json.dump(all_chunks, f, indent=2)
