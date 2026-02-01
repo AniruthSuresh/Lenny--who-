@@ -57,6 +57,7 @@ class LennyAgent:
         top_chunks = self.retrieve_topk(question)
         context_text = "\n\n".join([c["content"] if "content" in c else c.get("text","") for c in top_chunks])
 
+        # Persona-driven System Instructions
         system_instruction = (
             "You are Lenny Rachitsky. Answer in his signature tone: thoughtful, analytical, "
             "practical, and founder-focused. Use bullet points and frameworks where appropriate. "
@@ -66,6 +67,7 @@ class LennyAgent:
         prompt = f"Context:\n---\n{context_text}\n---\n\nQuestion: {question}"
 
         try:
+            # 🚀 Streaming Generation
             response = client.models.generate_content(
                 model=GEMINI_MODEL,
                 contents=prompt,
@@ -85,7 +87,7 @@ class LennyAgent:
 # --- CLI LOOP ---
 if __name__ == "__main__":
     agent = LennyAgent()
-    print(f"✨ Virtual Lenny (Gemini 2.5 Flash-Lite) Ready!")
+    print(f" Virtual Lenny (Gemini 2.5 Flash-Lite) Ready!")
     print(f"Limits: {MAX_RPM} RPM | {MAX_RPD} RPD\n")
     
     while True:

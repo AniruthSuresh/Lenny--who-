@@ -6,7 +6,7 @@ import uuid
 
 DATA_PATH = "../data/embedded/mxbai_corpus.pt"
 COLLECTION = "virtual-lenny"
-BATCH_SIZE = 500  # adjust if needed
+BATCH_SIZE = 500  
 
 client = QdrantClient(host="localhost", port=6333)
 
@@ -15,7 +15,6 @@ data = torch.load(DATA_PATH)
 embeddings = data["embeddings"]
 chunks = data["chunks"]
 
-# Create collection (overwrite if exists)
 if COLLECTION in [c.name for c in client.get_collections().collections]:
     client.delete_collection(collection_name=COLLECTION)
 
@@ -24,7 +23,6 @@ client.create_collection(
     vectors_config=VectorParams(size=embeddings.shape[1], distance=Distance.COSINE)
 )
 
-# Upsert in batches
 for start_idx in range(0, len(chunks), BATCH_SIZE):
     batch_chunks = chunks[start_idx:start_idx+BATCH_SIZE]
     batch_embs = embeddings[start_idx:start_idx+BATCH_SIZE]
