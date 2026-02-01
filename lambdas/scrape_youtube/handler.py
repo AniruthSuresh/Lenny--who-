@@ -40,6 +40,8 @@ def lambda_handler(event, context):
         # Process each video
         success_count = 0
         for video_id in video_ids:
+            print(f"Processing video ID: {video_id}")
+            
             key = f"{event['output_prefix']}{video_id}.json"
 
             if s3_object_exists(event['output_bucket'], key):
@@ -118,7 +120,7 @@ def fetch_and_clean_transcript(video_id: str) -> str:
         transcript_data = transcript.fetch()
         
         # Combine chunks
-        raw_text = " ".join(chunk['text'] for chunk in transcript_data)
+        raw_text = " ".join(chunk.text for chunk in transcript_data)
         
         # Clean text
         text = clean_transcript(raw_text)

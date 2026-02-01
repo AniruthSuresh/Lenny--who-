@@ -1,6 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
+import sys
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, PROJECT_ROOT)
 from lambdas.scrape_youtube.handler import lambda_handler 
