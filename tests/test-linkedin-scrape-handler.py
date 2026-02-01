@@ -19,9 +19,9 @@ def test_linkedin_lambda():
     # Ensure this bucket actually exists in your AWS account
     test_event = {
         "profile_url": "https://www.linkedin.com/in/lennyrachitsky/",
-        "count": 5,  # Keep it small for testing to save Apify credits
+        "count": 100,  # Keep it small for testing to save Apify credits
         "output_bucket": os.getenv("DATA_BUCKET_NAME"), 
-        "output_prefix": "test/raw/linkedin/"
+        "output_prefix": "data/raw/linkedin/"
     }
 
     print(" Starting Local Lambda Test...")

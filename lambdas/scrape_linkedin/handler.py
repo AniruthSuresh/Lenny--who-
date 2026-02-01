@@ -14,8 +14,8 @@ def lambda_handler(event, context):
     {
         "profile_url": "https://linkedin.com/in/lennyrachitsky",
         "count": 100,
-        "output_bucket": "lenny-rag-data",
-        "output_prefix": "raw/linkedin/"
+        "output_bucket": "virtual-lenny-bucket",
+        "output_prefix": "data/raw/linkedin/"
     }
     """
     try:
