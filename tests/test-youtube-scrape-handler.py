@@ -1,9 +1,11 @@
 import os
 import json
 from dotenv import load_dotenv
-from lambdas.scrape_youtube.handler import lambda_handler  # adjust path if needed
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, PROJECT_ROOT)
+from lambdas.scrape_youtube.handler import lambda_handler 
 
-load_dotenv()  # load AWS credentials and bucket name from .env
+load_dotenv()  #
 
 def test_youtube_lambda():
     class MockContext:
@@ -14,7 +16,7 @@ def test_youtube_lambda():
     # Build the event for Lambda
     # ----------------------------
     test_event = {
-        "input_bucket": os.getenv("DATA_BUCKET_NAME"),   # e.g., "virtual-lenny-bucket"
+        "input_bucket": os.getenv("DATA_BUCKET_NAME"),   
         "video_ids_key": "data/raw/youtube/video_ids.txt",
         "output_bucket": os.getenv("DATA_BUCKET_NAME"),
         "output_prefix": "data/raw/youtube/transcripts/"
@@ -22,7 +24,6 @@ def test_youtube_lambda():
 
     print("Starting Local Lambda Test...")
 
-    # Call the Lambda handler
     response = lambda_handler(test_event, MockContext())
 
     # Parse the response
@@ -37,10 +38,11 @@ def test_youtube_lambda():
         print(f"Error: {body.get('error')}")
 
 if __name__ == "__main__":
-    # check for AWS creds
-    if not os.getenv("AWS_ACCESS_KEY_ID") or not os.getenv("AWS_SECRET_ACCESS_KEY"):
+
+    if not os.getenv("ACCESS_KEY") or not os.getenv("SECRET_ACCESS_KEY"):
         print("Error: AWS credentials not found in environment.")
     elif not os.getenv("DATA_BUCKET_NAME"):
         print("Error: DATA_BUCKET_NAME not set in environment.")
+
     else:
         test_youtube_lambda()
