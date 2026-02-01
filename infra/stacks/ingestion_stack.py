@@ -291,20 +291,37 @@ class IngestionStack(Stack):
         )
         
         # Chain everything together with error handling at each stage
+        # definition = (
+        #     parallel_scraping
+        #     .add_catch(scraping_failed, errors=["States.ALL"])
+        #     .next(clean_data_task)
+        #     .add_catch(cleaning_failed, errors=["States.ALL"])
+        #     .next(chunk_data_task)
+        #     .add_catch(chunking_failed, errors=["States.ALL"])
+        #     .next(generate_embeddings_task)
+        #     .add_catch(embedding_failed, errors=["States.ALL"])
+        #     .next(store_qdrant_task)
+        #     .add_catch(qdrant_failed, errors=["States.ALL"])
+        #     .next(success_state)
+        # )
+        
+        # 1. Apply error handling to each task individually first
+        parallel_scraping.add_catch(scraping_failed, errors=["States.ALL"])
+        clean_data_task.add_catch(cleaning_failed, errors=["States.ALL"])
+        chunk_data_task.add_catch(chunking_failed, errors=["States.ALL"])
+        generate_embeddings_task.add_catch(embedding_failed, errors=["States.ALL"])
+        store_qdrant_task.add_catch(qdrant_failed, errors=["States.ALL"])
+
+        # 2. Now chain them together
         definition = (
             parallel_scraping
-            .add_catch(scraping_failed, errors=["States.ALL"])
             .next(clean_data_task)
-            .add_catch(cleaning_failed, errors=["States.ALL"])
             .next(chunk_data_task)
-            .add_catch(chunking_failed, errors=["States.ALL"])
             .next(generate_embeddings_task)
-            .add_catch(embedding_failed, errors=["States.ALL"])
             .next(store_qdrant_task)
-            .add_catch(qdrant_failed, errors=["States.ALL"])
             .next(success_state)
         )
-        
+
         # Create state machine
         self.state_machine = sfn.StateMachine(
             self, "IngestionPipeline",
