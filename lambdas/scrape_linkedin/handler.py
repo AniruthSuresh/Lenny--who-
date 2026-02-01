@@ -33,13 +33,19 @@ def lambda_handler(event, context):
         saved_count = 0
         for item in items:
             key = f"{prefix}{item['post_id']}.json"
-            s3.put_object(
-                Bucket=bucket,
-                Key=key,
-                Body=json.dumps(item, indent=2),
-                ContentType='application/json'
-            )
-            saved_count += 1
+            try:
+                s3.head_object(Bucket=bucket, Key=key)
+                print(f" Post {item['post_id']} already exists in S3, skipping.")
+                continue 
+            except s3.exceptions.ClientError:
+
+                s3.put_object(
+                    Bucket=bucket,
+                    Key=key,
+                    Body=json.dumps(item, indent=2),
+                    ContentType='application/json'
+                )
+                saved_count += 1
         
         print(f"Successfully saved {saved_count} posts to S3")
         
