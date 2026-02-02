@@ -48,7 +48,7 @@ def test_store_qdrant_cloud():
     
     test_event = {
         "input_bucket": os.getenv("DATA_BUCKET_NAME"),
-        "embeddings_key": "data/embedded/mxbai_corpus.pt",
+        "embeddings_key": "data/embedded/mxbai_corpus.npz",
         "collection_name": "virtual-lenny",
         "qdrant_url": os.getenv("QDRANT_URL"),
         "qdrant_api_key": os.getenv("QDRANT_API_KEY"),
@@ -137,7 +137,7 @@ def verify_s3_file_exists():
     import boto3
     
     bucket = os.getenv("DATA_BUCKET_NAME")
-    key = "data/embeddings/mxbai_corpus.pt"
+    key = "data/embeddings/mxbai_corpus.npz"
     
     if not bucket:
         print("  Cannot verify - DATA_BUCKET_NAME not set")
