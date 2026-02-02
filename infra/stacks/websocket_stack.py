@@ -10,50 +10,83 @@ from aws_cdk import (
     CfnOutput
 )
 from constructs import Construct
+from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 class WebSocketStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs):
         super().__init__(scope, id, **kwargs)
         
-        # 1. DynamoDB for Connection Tracking
+    
+        root_dir = Path(__file__).resolve().parent.parent.parent
+        agent_dir = root_dir / "agent"
+        
+        QDRANT_URL = os.getenv("QDRANT_URL")
+        QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+
+        # -------------------------
+        # DynamoDB Table for Connection Tracking
+        # -------------------------
         connections_table = dynamodb.Table(
             self, "ConnectionsTable",
-            partition_key=dynamodb.Attribute(name="connectionId", type=dynamodb.AttributeType.STRING),
+            partition_key=dynamodb.Attribute(
+                name="connectionId",
+                type=dynamodb.AttributeType.STRING
+            ),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             removal_policy=RemovalPolicy.DESTROY,
             table_name="virtual-lenny-connections"
         )
-        
-        # 2. Connection Handlers (Simple Python Functions)
+
+        # -------------------------
+        # Lambda: Connect Handler
+        # -------------------------
         connect_handler = _lambda.Function(
             self, "ConnectHandler",
             runtime=_lambda.Runtime.PYTHON_3_11,
             handler="handler.lambda_handler",
-            code=_lambda.Code.from_asset("../../agent/connect_handler"),
-            environment={"CONNECTIONS_TABLE": connections_table.table_name}
+            code=_lambda.Code.from_asset(str(agent_dir / "connect_handler")),
+            timeout=Duration.seconds(30),
+            environment={
+                "CONNECTIONS_TABLE": connections_table.table_name
+            }
         )
+        connections_table.grant_write_data(connect_handler)
+
         
+        # -------------------------
+        # Lambda: Disconnect Handler
+        # -------------------------
         disconnect_handler = _lambda.Function(
             self, "DisconnectHandler",
             runtime=_lambda.Runtime.PYTHON_3_11,
             handler="handler.lambda_handler",
-            code=_lambda.Code.from_asset("../agent/disconnect_handler"),
-            environment={"CONNECTIONS_TABLE": connections_table.table_name}
+            code=_lambda.Code.from_asset(str(agent_dir / "disconnect_handler")),
+            timeout=Duration.seconds(30),
+            environment={
+                "CONNECTIONS_TABLE": connections_table.table_name
+            }
         )
+        connections_table.grant_write_data(disconnect_handler)
+
         
-        connections_table.grant_read_write_data(connect_handler)
-        connections_table.grant_read_write_data(disconnect_handler)
-        
-        # 3. Message Handler (Your Verified Docker Lambda)
+        # -------------------------
+        # Lambda: Message Handler (RAG Agent) - Docker
+        # -------------------------
         message_handler = _lambda.DockerImageFunction(
             self, "MessageHandler",
-            code=_lambda.DockerImageCode.from_image_asset("../agent/message_handler"),
+            code=_lambda.DockerImageCode.from_image_asset(
+                str(agent_dir / "message_handler")
+            ),
             timeout=Duration.minutes(2),
             memory_size=3008,
             environment={
-                "QDRANT_URL": os.getenv("QDRANT_URL", ""),
-                "QDRANT_API_KEY": os.getenv("QDRANT_API_KEY", ""),
+                "QDRANT_URL": os.getenv("QDRANT_URL"),
+                "QDRANT_API_KEY": os.getenv("QDRANT_API_KEY"),
             }
         )
         
@@ -63,28 +96,55 @@ class WebSocketStack(Stack):
             resources=["*"]
         ))
         
-        # 4. WebSocket API Setup
+        # -------------------------
+        # WebSocket API
+        # -------------------------
         web_socket_api = apigwv2.WebSocketApi(
             self, "VirtualLennyWebSocket",
             connect_route_options=apigwv2.WebSocketRouteOptions(
-                integration=integrations.WebSocketLambdaIntegration("ConnIn", connect_handler)
+                integration=integrations.WebSocketLambdaIntegration(
+                    "ConnectIntegration",
+                    connect_handler
+                )
             ),
             disconnect_route_options=apigwv2.WebSocketRouteOptions(
-                integration=integrations.WebSocketLambdaIntegration("DiscIn", disconnect_handler)
+                integration=integrations.WebSocketLambdaIntegration(
+                    "DisconnectIntegration",
+                    disconnect_handler
+                )
             ),
             default_route_options=apigwv2.WebSocketRouteOptions(
-                integration=integrations.WebSocketLambdaIntegration("MsgIn", message_handler)
+                integration=integrations.WebSocketLambdaIntegration(
+                    "MessageIntegration",
+                    message_handler
+                )
             )
         )
         
+        # Deploy stage
         stage = apigwv2.WebSocketStage(
-            self, "Prod", 
-            web_socket_api=web_socket_api, 
-            stage_name="prod", 
+            self, "ProductionStage",
+            web_socket_api=web_socket_api,
+            stage_name="prod",
             auto_deploy=True
         )
         
         # Crucial for post_to_connection
         web_socket_api.grant_manage_connections(message_handler)
+        # -------------------------
+        # Outputs
+        # -------------------------
+        CfnOutput(
+            self, "WebSocketURL",
+            value=stage.url,
+            description="WebSocket API endpoint for Virtual Lenny chat",
+            export_name="VirtualLennyWebSocketURL"
+        )
+        
+        CfnOutput(
+            self, "WebSocketApiId",
+            value=web_socket_api.api_id,
+            description="WebSocket API ID"
+        )
 
-        CfnOutput(self, "WebSocketURL", value=stage.url)
+        
