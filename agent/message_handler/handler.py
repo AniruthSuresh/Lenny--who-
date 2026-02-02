@@ -9,6 +9,10 @@ from qdrant_client import QdrantClient
 MODEL_PATH = "/var/task/mxbai_model"
 model = SentenceTransformer(MODEL_PATH, device="cpu")
 
+"""
+NOTE : Don't load the model inside the lamdba function -- once per container
+and not once for every request
+"""
 # model = SentenceTransformer(
 #     "mixedbread-ai/mxbai-embed-large-v1",
 #     device="cuda"
