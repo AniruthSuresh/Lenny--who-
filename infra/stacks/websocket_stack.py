@@ -85,8 +85,8 @@ class WebSocketStack(Stack):
             timeout=Duration.minutes(2),
             memory_size=3008,
             environment={
-                "QDRANT_URL": os.getenv("QDRANT_URL"),
-                "QDRANT_API_KEY": os.getenv("QDRANT_API_KEY"),
+                "QDRANT_URL": QDRANT_URL,
+                "QDRANT_API_KEY": QDRANT_API_KEY,
             }
         )
         
@@ -133,7 +133,20 @@ class WebSocketStack(Stack):
             stage_name="prod",
             auto_deploy=True
         )
-        
+    
+        # # IMPORTANT: Grant message handler permission to post back to WebSocket connections
+        # # This is crucial for the handler to send responses back
+        # message_handler.add_to_role_policy(
+        #     iam.PolicyStatement(
+        #         actions=["execute-api:ManageConnections"],
+        #         resources=[
+        #             # Construct the ARN for the WebSocket API
+        #             f"arn:aws:execute-api:{self.region}:{self.account}:" \
+        #             f"{web_socket_api.api_id}/{stage.stage_name}/POST/@connections/*"
+        #         ]
+        #     )
+        # )
+
         # Crucial for post_to_connection
         web_socket_api.grant_manage_connections(message_handler)
         # -------------------------
