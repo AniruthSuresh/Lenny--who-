@@ -282,7 +282,7 @@ class IngestionStack(Stack):
             payload=sfn.TaskInput.from_object({
                 "bucket": data_bucket.bucket_name,      
                 "input_key": "data/chunks/final_chunks.json", 
-                "output_key": "data/embedded/mxbai_corpus.pt"
+                "output_key": "data/embedded/mxbai_corpus.npz"
             }),
             result_path="$.embedding_result",
             retry_on_service_exceptions=True
