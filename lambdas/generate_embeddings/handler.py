@@ -15,7 +15,7 @@ os.environ['HF_HOME'] = '/tmp'
 MODEL_PATH = "/var/task/mxbai_model"
 
 # Load model globally for warm-start performance
-model = SentenceTransformer(MODEL_PATH, device="cpu", local_files_only=True)
+model = SentenceTransformer(MODEL_PATH, device="cpu")
 
 def lambda_handler(event, context):
     """
