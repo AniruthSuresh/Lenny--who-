@@ -28,7 +28,7 @@ def lambda_handler(event, context):
 
     domain = event['requestContext']['domainName']
     stage = event['requestContext']['stage']
-    apigw = boto3.client('apigatewaymanagementapi', endpoint_url=f"https://{domain}/{stage}" , region_name='us-east-1')
+    apigw = boto3.client('apigatewaymanagementapi', endpoint_url=f"https://{domain}/{stage}" , region_name=os.environ['AWS_REGION'])
 
     try:
         # 1. Parse User Query
