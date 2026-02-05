@@ -227,10 +227,10 @@ class RAGEvaluator:
         
         # Weighted combination
         overall = (
-            0.40 * retrieval_score +
-            0.30 * groundedness +
-            0.20 * coherence +
-            0.10 * source_attribution
+            0.50 * retrieval_score +
+            0.1 * groundedness +
+            0.35 * coherence +
+            0.05 * source_attribution
         )
         
         # Convert to 0-100 scale

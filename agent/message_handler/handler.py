@@ -4,11 +4,10 @@ import os
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from qdrant_client import QdrantClient
-from evaluator import RAGEvaluator
 
 # Warm-start: Loaded once when the container starts
-MODEL_PATH = "/var/task/mxbai_model"
-model = SentenceTransformer(MODEL_PATH, device="cpu")
+# MODEL_PATH = "/var/task/mxbai_model"
+# model = SentenceTransformer(MODEL_PATH, device="cpu")
 
 """
 NOTE : Don't load the model inside the lamdba function -- once per container
@@ -18,8 +17,8 @@ and not once for every request
 #     "mixedbread-ai/mxbai-embed-large-v1",
 #     device="cuda"
 # )
-
-evaluator = RAGEvaluator()
+evaluator = None
+model = None
 
 bedrock = boto3.client("bedrock-runtime", region_name="us-east-1")
 
@@ -41,11 +40,22 @@ def send_message(apigw_client, connection_id, payload):
 
 
 def lambda_handler(event, context):
+
+    global model, evaluator
     connection_id = event['requestContext']['connectionId']
 
     domain = event['requestContext']['domainName']
     stage = event['requestContext']['stage']
     apigw = boto3.client('apigatewaymanagementapi', endpoint_url=f"https://{domain}/{stage}" , region_name=os.environ['AWS_REGION'])
+
+    if evaluator is None:
+            # This will now work if evaluator.py is in the same folder
+            from evaluator import RAGEvaluator 
+            evaluator = RAGEvaluator()
+
+    if model is None:
+        from sentence_transformers import SentenceTransformer
+        model = SentenceTransformer("/var/task/mxbai_model", device="cpu")
 
     try:
         # 1. Parse User Query
@@ -65,6 +75,7 @@ def lambda_handler(event, context):
         )
         # results = search_result.points # https://github.com/qdrant/qdrant-client
         # context_text = "\n\n".join([r.payload['content'] for r in results])
+        search_result = search_result.points
 
         retrieval_metrics = evaluator.calculate_retrieval_score(search_result)
         print(f"📊 Retrieval avg score: {retrieval_metrics['avg_score']}")
