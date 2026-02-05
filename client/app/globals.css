@@ -1,0 +1,48 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+/* https://stackoverflow.com/questions/77443221/cannot-apply-unknown-utility-class-border-border-the-border-border-class-d
+*/
+
+@import "tailwindcss";
+@config "../tailwind.config.ts"; 
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+  }
+  
+  body {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
+
+/* Terminal scrollbar */
+.terminal-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+/* Typing animation */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: blink 1s infinite;
+}
