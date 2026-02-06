@@ -9,13 +9,20 @@ This project builds a **full end-to-end RAG pipeline**  from scraping real PM co
 ---
 
 ## Demo
+
 ![Virtual Lenny Demo](./results/virtual-lenny-demo.gif)
 
 **Live demo**:  
 🌐 https://virutal-lenny-with-eval.vercel.app/
 
+For testing and evaluation, I also included a small script at  
+`src/generate-synthetic-questions/`.
 
-> NOTE : The first response might take around **7 -12** seconds because I’m using a **mxbai-embed-large-v1** for better retrieval quality (see ablation ron time and accuracy across models below). Loading it adds some latency, but the quality boost was worth it for now. Optimizing this tradeoff is an active direction I plan to explore.
+This script generates a set of synthetic questions derived from both **LinkedIn posts** and **YouTube transcripts**, and can be used to test the RAG pipeline . 
+
+
+
+> NOTE : The first response might take around **7 -12** seconds because I’m using a **mxbai-embed-large-v1** for better retrieval quality (see ablation run time and accuracy across models below). Loading it adds some latency, but the quality boost was worth it for now. Optimizing this tradeoff is an active direction I plan to explore.
 
 ![Ablation on time](./results/mixed_embeddings_combined_vertical.png)
 
