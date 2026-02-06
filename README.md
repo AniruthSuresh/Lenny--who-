@@ -31,6 +31,7 @@ This script generates a set of synthetic questions derived from both **LinkedIn 
 
 ## High-Level Architecture
 
+> [!IMPORTANT]  
 > A detailed, component-by-component breakdown is available in `implementation.md`.  
 > This section gives a high-level view of how the system fits together.
 
