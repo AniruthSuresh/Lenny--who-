@@ -53,7 +53,7 @@ Each response is automatically evaluated using an internal **RAG quality scorer*
 
 ### 3. Web Interface
 
-The **frontend** is built using **Next.js 15** and **React 19**, with a simple terminal-style UI using **Tailwind CSS**. I’m still relatively new to frontend work, so this part of the project focuses more on getting the system working end-to-end rather than visual polish, and there may be a few rough edges. The client talks to the backend over a persistent WebSocket connection, streams tokens in real time, and shows the RAG quality score alongside each response. The frontend is deployed on **Vercel**.
+The **frontend** is built using **Next.js 15** and **React 19**, with a simple terminal-style UI using **Tailwind CSS**.  The client talks to the backend over a persistent WebSocket connection, streams tokens in real time, and shows the RAG quality score alongside each response. The frontend is deployed on **Vercel**.
 
 
 The **backend** exposes a **WebSocket API Gateway** (`/infra/stacks/websocket_stack.py`) backed by **AWS Lambda**, responsible for managing connections, routing messages to the RAG agent, and streaming partial responses back to the client. This setup enables real-time interaction and cleanly separates connection lifecycle management (connect / disconnect) from message handling and model inference, which lives under `/agent/*`.
