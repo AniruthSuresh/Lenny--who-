@@ -151,4 +151,25 @@ I occasionally ran into random request timeouts during indexing and search. Fix:
 
 ---
 
+## Project Structure
+
+```csharp
+virtual-lenny/
+├── infra/                  # AWS CDK infrastructure
+├── lambdas/                # Ingestion + embedding Lambdas
+├── agent/                  # WebSocket RAG agent
+├── client/                 # Next.js frontend
+├── data/                   # Outputs(chunked , raw & embedded)
+├── data-ingestion/          # Local testing and scraping testing (not usedin the final deployment)       
+├── helpers/                # to get the youtube-id's   
+├── src/                    # Local - plotters & synthetic question generation 
+├── results/                # Stores the plots & json ablations
+├── tests/                  # Tests all the lambdas locally 
+├── implementation.md       # Detailed implementation
+├── design.md               # Ideal system design
+└── README.md
+```
+
+---
+
 
