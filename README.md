@@ -53,7 +53,7 @@ The deployment success for both the stacks on aws step function :
 
 ### 2. RAG Agent
 
-The RAG agent embeds user queries using `mixedbread-ai/mxbai-embed-large-v1` (1024 dimensions) and performs semantic retrieval against **Qdrant Cloud** to fetch the most relevant context. Responses are generated via **AWS Bedrock (Nova Lite)** with token-level streaming and delivered to the client in real time over a *o*WebSocket API**.
+The RAG agent embeds user queries using `mixedbread-ai/mxbai-embed-large-v1` (1024 dimensions) and performs semantic retrieval against **Qdrant Cloud** to fetch the most relevant context. Responses are generated via **AWS Bedrock (Nova Lite)** with token-level streaming and delivered to the client in real time over a **WebSocket API**.
 
 Each response is automatically evaluated using an internal **RAG quality scorer**, which measures retrieval relevance, groundedness , coherence and retrieved context(youtube / linkedin in this case). 
 
